@@ -1,0 +1,15 @@
+
+from pathlib import Path
+
+MODELO = "qwen3.5:2b"
+HOST = "http://127.0.0.1:11434"
+
+PAGINAS_POR_BLOCO_PADRAO = 10
+
+NUM_CTX = 16384
+NUM_PREDICT = 1500
+
+MAX_CHARS_CONTEUDO = 12000
+MAX_CHARS_QUESTOES = 6000
+
+PASTA_SAIDA = Path("./resumos")
