@@ -2,7 +2,7 @@ import numpy as np
 from ollama import Client
 from config import HOST
 
-MODEL_EMBEDDING = "bge-m3:latest"
+MODEL_EMBEDDING = "mxbai-embed-large:latest"
 
 client = Client(host=HOST, trust_env=False)
 
