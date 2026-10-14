@@ -9,6 +9,10 @@ RE_MARCADORES = re.compile(
     r"\(\s*\)\s*certo|\(\s*\)\s*errado|certo\s*\(\s*\)|errado\s*\(\s*\))"
 )
 
+# ------------------------------ Leitura do PDF -------------------------
+def extrair_paginas(caminho: Path) -> list[str]:
+    reader = PdfReader(caminho)
+    return [(p.extract_text() or "").strip() for p in reader.pages]
 
 def eh_pagina_de_questao(texto: str) -> bool:
     alternativas = len(RE_ALTERNATIVA.findall(texto))
@@ -19,18 +23,26 @@ def eh_pagina_de_questao(texto: str) -> bool:
         or (alternativas >= 2 and marcadores >= 1)
     )
 
-
-# ------------------------------ Leitura do PDF -------------------------
-def extrair_paginas(caminho: Path) -> list[str]:
-    reader = PdfReader(caminho)
-    return [(p.extract_text() or "").strip() for p in reader.pages]
-
-
 def separar_conteudo_e_questoes(paginas: list[str]):
-    """Devolve (paginas_conteudo, paginas_questao), cada uma como lista de (n, texto)."""
-    conteudo, questoes = [], []
-    for n, texto in enumerate(paginas, 1):
-        if not texto:
-            continue
-        (questoes if eh_pagina_de_questao(texto) else conteudo).append((n, texto))
+    #criar tupla numerando a página e seu conteúdo
+    paginas_validas = [
+        (n, texto)
+        for n, texto in enumerate(paginas, 1)
+        if texto
+    ]
+
+    #seleciona todas as tuplas de paginas_validas que na função eh_pagina_de_questao() apresentam FALSE
+    conteudo = [
+        (n, texto)
+        for n, texto in paginas_validas
+        if not eh_pagina_de_questao(texto)
+    ]
+
+    #seleciona todas as tuplas de paginas_validas que na função eh_pagina_de_questao() apresentam TRUE
+    questoes = [
+        (n, texto)
+        for n, texto in paginas_validas
+        if eh_pagina_de_questao(texto)
+    ]
+
     return conteudo, questoes
